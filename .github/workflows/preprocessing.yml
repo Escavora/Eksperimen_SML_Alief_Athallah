@@ -10,14 +10,10 @@ on:
 jobs:
   preprocess:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python 3.10
         uses: actions/setup-python@v5
@@ -27,13 +23,29 @@ jobs:
       - name: Install dependencies
         run: pip install pandas numpy scikit-learn joblib
 
-      - name: Run preprocessing
+      - name: Run preprocessing script
         run: python preprocessing/automate_Alief_Athallah.py
 
-      - name: Commit preprocessed data
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name  "GitHub Actions"
-          git add preprocessing/stroke_preprocessing/
-          git diff --staged --quiet || git commit -m "auto: update preprocessed dataset [skip ci]"
-          git push
+      - name: Upload imputer
+        uses: actions/upload-artifact@v4
+        with:
+          name: imputer
+          path: preprocessing/stroke_preprocessing/imputer.pkl
+
+      - name: Upload label encoders
+        uses: actions/upload-artifact@v4
+        with:
+          name: label_encoders
+          path: preprocessing/stroke_preprocessing/label_encoders.pkl
+
+      - name: Upload preprocessor (scaler)
+        uses: actions/upload-artifact@v4
+        with:
+          name: preprocessor
+          path: preprocessing/stroke_preprocessing/preprocessor.pkl
+
+      - name: Upload preprocessed dataset
+        uses: actions/upload-artifact@v4
+        with:
+          name: stroke_preprocessed
+          path: preprocessing/stroke_preprocessing/stroke_preprocessed.csv
