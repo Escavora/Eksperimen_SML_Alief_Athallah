@@ -10,10 +10,14 @@ on:
 jobs:
   preprocess:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python 3.10
         uses: actions/setup-python@v5
@@ -25,6 +29,19 @@ jobs:
 
       - name: Run preprocessing script
         run: python preprocessing/automate_Alief_Athallah.py
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
+      - name: Commit and push changes
+        run: |
+          git add preprocessing/stroke_preprocessing/
+          git commit -m "chore: update preprocessing artifacts" || true
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload imputer
         uses: actions/upload-artifact@v4
