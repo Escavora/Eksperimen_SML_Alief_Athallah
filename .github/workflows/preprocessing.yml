@@ -1,0 +1,35 @@
+name: Automated Preprocessing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "stroke_raw/**"
+      - "preprocessing/automate_Alief_Athallah.py"
+
+jobs:
+  preprocess:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install pandas numpy scikit-learn
+
+      - name: Run preprocessing
+        run: python preprocessing/automate_Alief_Athallah.py
+
+      - name: Commit preprocessed data
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name  "GitHub Actions"
+          git add preprocessing/stroke_preprocessing/
+          git diff --staged --quiet || git commit -m "auto: update preprocessed dataset [skip ci]"
+          git push
