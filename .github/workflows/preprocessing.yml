@@ -4,12 +4,14 @@ on:
   push:
     branches: [main]
     paths:
-      - "stroke_raw/**"
+      - "dataset-stroke-data.csv"
       - "preprocessing/automate_Alief_Athallah.py"
 
 jobs:
   preprocess:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -21,7 +23,7 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: pip install pandas numpy scikit-learn
+        run: pip install pandas numpy scikit-learn joblib
 
       - name: Run preprocessing
         run: python preprocessing/automate_Alief_Athallah.py
